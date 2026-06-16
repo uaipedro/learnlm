@@ -9,9 +9,17 @@ Material-base: curso GES122 (Modelos Lineares II, UFLA).
 
 ## Instalação
 
+Direto do GitHub (instala o `MASS`, única dependência, junto):
+
 ```r
-# install.packages("MASS")  # única dependência
-R CMD INSTALL .             # a partir da raiz do projeto
+# install.packages("remotes")
+remotes::install_github("uaipedro/learnlm")
+```
+
+Ou, a partir de um clone local, na raiz do projeto:
+
+```sh
+R CMD INSTALL .
 ```
 
 ## A ideia central
