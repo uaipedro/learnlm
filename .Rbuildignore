@@ -1,0 +1,6 @@
+^referencias$
+^docs$
+^quarto$
+^learnlm\.Rproj$
+^\.Rproj\.user$
+^inst/verificacao.*\.R$

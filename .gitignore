@@ -1,0 +1,19 @@
+# Ferramentas / agente
+.claude/
+
+# Material de terceiros e renders (não publicar)
+referencias/
+quarto/
+
+# RStudio
+.Rproj.user/
+*.Rproj
+
+# Artefatos do R
+.Rhistory
+.RData
+.Rapp.history
+*.tar.gz
+src/*.o
+src/*.so
+src/*.dll

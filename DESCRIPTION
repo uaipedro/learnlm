@@ -1,0 +1,21 @@
+Package: learnlm
+Title: Aprendizado Interativo de Modelos Lineares de Posto Incompleto
+Version: 0.1.0
+Authors@R:
+    person("Pedro", "Mambelli", , "pedromambelli@gmail.com", role = c("aut", "cre"))
+Description: Ferramentas didaticas para aprender modelos lineares, com foco em
+    modelos de posto incompleto. Constroi a matriz de delineamento completa
+    (super-parametrizada), resolve o sistema de equacoes normais com inversas
+    generalizadas (condicional, minimos quadrados e Moore-Penrose), obtem
+    solucoes sob diferentes restricoes, testa estimabilidade e narra cada etapa
+    da construcao do modelo passo a passo. Todas as funcoes internas tambem sao
+    publicas, podendo ser chamadas diretamente sobre matrizes.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports:
+    MASS
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
