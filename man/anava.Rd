@@ -4,20 +4,31 @@
 \alias{anava}
 \title{Tabela da analise de variancia (ANAVA)}
 \usage{
-anava(objeto)
+anava(objeto, erros = NULL)
 }
 \arguments{
 \item{objeto}{Objeto \code{llm}.}
+
+\item{erros}{Vetor nomeado opcional \code{fonte = termo_de_erro} (p.ex.
+\code{c(irrig = "bloco:irrig")}). Fontes nao listadas usam o \code{Residuo} global.
+Termos usados como erro viram estrato de erro puro (sem \code{F}).}
 }
 \value{
 \code{data.frame} de classe \code{anava_llm} com colunas \code{GL}, \code{SQ}, \code{QM}, \code{F},
-\code{pvalor}, uma linha por termo mais \code{Residuo} e \code{Total}.
+\code{pvalor}, uma linha por termo mais \code{Residuo} e \code{Total}. Com \code{erros}, ganha a
+coluna \code{erro} (contra qual QM cada fonte foi testada).
 }
 \description{
 Monta a ANAVA sequencial (cada termo ajustado pelos anteriores, na ordem da
 formula), com as somas de quadrados obtidas por reducoes \code{R(.)}. Equivale a
 decomposicao do tipo I e reproduz \code{anova(lm(...))}. Serve para DIC, DBC e
-fatoriais.
+fatoriais. Com \code{erros}, cada fonte e testada contra um estrato de erro
+designado (split-plot / parcelas subdivididas).
+}
+\details{
+Os estratos de erro reproduzem exatamente os testes classicos em
+delineamentos \emph{balanceados}. Para split-plot \emph{desbalanceado} o rigoroso e
+modelo misto (REML, \code{lme4}); aqui e uma aproximacao didatica.
 }
 \examples{
 dados <- data.frame(

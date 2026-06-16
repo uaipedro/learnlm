@@ -82,6 +82,8 @@ print.inferencia_llm <- function(x, digits = 4, ...) {
 #' @param lambda Vetor de coeficientes (comprimento = colunas de X).
 #' @param objeto Objeto `llm`.
 #' @param nivel Nivel de confianca (padrao 0.95).
+#' @param erro Nome de um termo do modelo a usar como estrato de erro (split-plot)
+#'   no lugar do `Residuo` global. `NULL` (padrao) usa o QME global.
 #' @return Vetor nomeado com `estimativa`, `ep`, `gl`, `inferior`, `superior`.
 #' @export
 #' @examples
@@ -91,7 +93,7 @@ print.inferencia_llm <- function(x, digits = 4, ...) {
 #' )
 #' m <- llm(y ~ trat, dados)
 #' intervalo_confianca(c(0, 1, 0, -1), m)
-intervalo_confianca <- function(lambda, objeto, nivel = 0.95) {
+intervalo_confianca <- function(lambda, objeto, nivel = 0.95, erro = NULL) {
   ml <- .como_llm(objeto)
   expr <- if (is.character(lambda)) lambda else NULL
   lambda <- .como_lambda(lambda, ml)
@@ -101,11 +103,11 @@ intervalo_confianca <- function(lambda, objeto, nivel = 0.95) {
             call. = FALSE)
   }
   est <- .estimativa_lambda(ml, lambda)
-  v <- qme(ml)
-  ep <- sqrt(v$S2 * est$var_unit)
-  tcrit <- stats::qt(1 - (1 - nivel) / 2, v$gl)
+  e <- .qm_erro(ml, erro)
+  ep <- sqrt(e$QM * est$var_unit)
+  tcrit <- stats::qt(1 - (1 - nivel) / 2, e$gl)
   .resultado_inferencia(
-    c(estimativa = est$valor, ep = ep, gl = v$gl,
+    c(estimativa = est$valor, ep = ep, gl = e$gl,
       inferior = est$valor - tcrit * ep,
       superior = est$valor + tcrit * ep),
     tipo = "ic", expr = expr, estimavel = estimavel)
@@ -116,6 +118,8 @@ intervalo_confianca <- function(lambda, objeto, nivel = 0.95) {
 #' @param lambda Vetor de coeficientes (comprimento = colunas de X).
 #' @param objeto Objeto `llm`.
 #' @param valor Valor sob a hipotese nula (padrao 0).
+#' @param erro Nome de um termo do modelo a usar como estrato de erro (split-plot)
+#'   no lugar do `Residuo` global. `NULL` (padrao) usa o QME global.
 #' @return Vetor nomeado com `estimativa`, `ep`, `t`, `gl`, `pvalor`.
 #' @export
 #' @examples
@@ -124,7 +128,7 @@ intervalo_confianca <- function(lambda, objeto, nivel = 0.95) {
 #'   y = c(7, 9, 8, 10, 41, 36, 39, 42, 18, 18, 18, 17)
 #' )
 #' teste_t("trat1 - trat3", llm(y ~ trat, dados))
-teste_t <- function(lambda, objeto, valor = 0) {
+teste_t <- function(lambda, objeto, valor = 0, erro = NULL) {
   ml <- .como_llm(objeto)
   expr <- if (is.character(lambda)) lambda else NULL
   lambda <- .como_lambda(lambda, ml)
@@ -134,12 +138,12 @@ teste_t <- function(lambda, objeto, valor = 0) {
             call. = FALSE)
   }
   est <- .estimativa_lambda(ml, lambda)
-  v <- qme(ml)
-  ep <- sqrt(v$S2 * est$var_unit)
+  e <- .qm_erro(ml, erro)
+  ep <- sqrt(e$QM * est$var_unit)
   t <- (est$valor - valor) / ep
   .resultado_inferencia(
-    c(estimativa = est$valor, ep = ep, t = t, gl = v$gl,
-      pvalor = 2 * stats::pt(-abs(t), v$gl)),
+    c(estimativa = est$valor, ep = ep, t = t, gl = e$gl,
+      pvalor = 2 * stats::pt(-abs(t), e$gl)),
     tipo = "t", expr = expr, estimavel = estimavel)
 }
 
@@ -152,6 +156,8 @@ teste_t <- function(lambda, objeto, valor = 0) {
 #'   expressoes de contraste (p.ex. `c("trat1 - trat2", "trat2 - trat3")`).
 #' @param objeto Objeto `llm`.
 #' @param m Vetor `s` sob H0 (padrao zeros).
+#' @param erro Nome de um termo do modelo a usar como estrato de erro (split-plot)
+#'   no lugar do `Residuo` global. `NULL` (padrao) usa o QME global.
 #' @return Vetor nomeado com `F`, `gl_num`, `gl_den`, `pvalor`.
 #' @export
 #' @examples
@@ -161,7 +167,7 @@ teste_t <- function(lambda, objeto, valor = 0) {
 #' )
 #' m <- llm(y ~ trat, dados)
 #' teste_F(c("trat1 - trat2", "trat2 - trat3"), m)   # H0: sem efeito de trat
-teste_F <- function(L, objeto, m = NULL) {
+teste_F <- function(L, objeto, m = NULL, erro = NULL) {
   ml <- .como_llm(objeto)
   expr <- if (is.character(L)) L else NULL
   L <- .montar_L(ml, L)
@@ -172,12 +178,12 @@ teste_F <- function(L, objeto, m = NULL) {
   W <- L %*% ml$G %*% t(L)
   d <- Lb - m
   Q <- as.numeric(t(d) %*% solve(W) %*% d)
-  v <- qme(ml)
+  e <- .qm_erro(ml, erro)
   s <- nrow(L)
-  Fobs <- Q / (s * v$S2)
+  Fobs <- Q / (s * e$QM)
   .resultado_inferencia(
-    c(F = Fobs, gl_num = s, gl_den = v$gl,
-      pvalor = stats::pf(Fobs, s, v$gl, lower.tail = FALSE)),
+    c(F = Fobs, gl_num = s, gl_den = e$gl,
+      pvalor = stats::pf(Fobs, s, e$gl, lower.tail = FALSE)),
     tipo = "F", expr = expr, estimavel = estimavel)
 }
 
@@ -190,28 +196,30 @@ teste_F <- function(L, objeto, m = NULL) {
 #'   expressoes de contraste.
 #' @param objeto Objeto `llm`.
 #' @param nivel Nivel de confianca (padrao 0.95).
+#' @param erro Nome de um termo do modelo a usar como estrato de erro (split-plot)
+#'   no lugar do `Residuo` global. `NULL` (padrao) usa o QME global.
 #' @return Lista com `centro` (Lb), `W` = `L (X'X)^- L'`, `constante` (lado
 #'   direito da desigualdade) e `dentro()`, funcao que testa se um ponto pertence
 #'   a regiao.
 #' @export
-regiao_confianca <- function(L, objeto, nivel = 0.95) {
+regiao_confianca <- function(L, objeto, nivel = 0.95, erro = NULL) {
   ml <- .como_llm(objeto)
   L <- .montar_L(ml, L)
   .validar_L(ml, L, "L")
   b <- .solucao(ml)
   centro <- as.numeric(L %*% b)
   W <- L %*% ml$G %*% t(L)
-  v <- qme(ml)
+  e <- .qm_erro(ml, erro)
   s <- nrow(L)
-  Fcrit <- stats::qf(nivel, s, v$gl)
-  constante <- s * v$S2 * Fcrit
+  Fcrit <- stats::qf(nivel, s, e$gl)
+  constante <- s * e$QM * Fcrit
   Winv <- solve(W)
   reg <- list(
     centro = centro,
     W = W,
     constante = constante,
     nivel = nivel,
-    gl = c(s, v$gl),
+    gl = c(s, e$gl),
     dentro = function(ponto) {
       d <- as.numeric(ponto) - centro
       as.numeric(t(d) %*% Winv %*% d) <= constante

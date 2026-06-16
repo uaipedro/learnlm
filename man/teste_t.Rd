@@ -4,7 +4,7 @@
 \alias{teste_t}
 \title{Teste t para H0: lambda'beta = valor}
 \usage{
-teste_t(lambda, objeto, valor = 0)
+teste_t(lambda, objeto, valor = 0, erro = NULL)
 }
 \arguments{
 \item{lambda}{Vetor de coeficientes (comprimento = colunas de X).}
@@ -12,6 +12,9 @@ teste_t(lambda, objeto, valor = 0)
 \item{objeto}{Objeto \code{llm}.}
 
 \item{valor}{Valor sob a hipotese nula (padrao 0).}
+
+\item{erro}{Nome de um termo do modelo a usar como estrato de erro (split-plot)
+no lugar do \code{Residuo} global. \code{NULL} (padrao) usa o QME global.}
 }
 \value{
 Vetor nomeado com \code{estimativa}, \code{ep}, \code{t}, \code{gl}, \code{pvalor}.

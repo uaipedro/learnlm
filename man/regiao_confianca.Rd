@@ -4,7 +4,7 @@
 \alias{regiao_confianca}
 \title{Regiao de confianca para um conjunto de funcoes estimaveis}
 \usage{
-regiao_confianca(L, objeto, nivel = 0.95)
+regiao_confianca(L, objeto, nivel = 0.95, erro = NULL)
 }
 \arguments{
 \item{L}{Matriz \verb{s x p} (cada linha uma funcao estimavel), ou um vetor de
@@ -13,6 +13,9 @@ expressoes de contraste.}
 \item{objeto}{Objeto \code{llm}.}
 
 \item{nivel}{Nivel de confianca (padrao 0.95).}
+
+\item{erro}{Nome de um termo do modelo a usar como estrato de erro (split-plot)
+no lugar do \code{Residuo} global. \code{NULL} (padrao) usa o QME global.}
 }
 \value{
 Lista com \code{centro} (Lb), \code{W} = \verb{L (X'X)^- L'}, \code{constante} (lado

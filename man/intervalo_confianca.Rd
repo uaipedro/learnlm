@@ -4,7 +4,7 @@
 \alias{intervalo_confianca}
 \title{Intervalo de confianca para uma funcao estimavel}
 \usage{
-intervalo_confianca(lambda, objeto, nivel = 0.95)
+intervalo_confianca(lambda, objeto, nivel = 0.95, erro = NULL)
 }
 \arguments{
 \item{lambda}{Vetor de coeficientes (comprimento = colunas de X).}
@@ -12,6 +12,9 @@ intervalo_confianca(lambda, objeto, nivel = 0.95)
 \item{objeto}{Objeto \code{llm}.}
 
 \item{nivel}{Nivel de confianca (padrao 0.95).}
+
+\item{erro}{Nome de um termo do modelo a usar como estrato de erro (split-plot)
+no lugar do \code{Residuo} global. \code{NULL} (padrao) usa o QME global.}
 }
 \value{
 Vetor nomeado com \code{estimativa}, \code{ep}, \code{gl}, \code{inferior}, \code{superior}.

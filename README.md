@@ -139,6 +139,28 @@ mf <- llm(y ~ tipo + metodo + tipo:metodo, fat)
 desdobramento(mf, "tipo", dentro_de = "metodo")
 ```
 
+### Estratos de erro (split-plot / parcelas subdivididas)
+
+Quando há mais de um erro (parcela e subparcela), designe o estrato com `erros`
+na ANAVA e `erro` na inferência. A decomposição de SQ é a mesma; muda só contra
+qual quadrado médio cada fonte é testada. O termo usado como erro vira estrato de
+erro puro (sem `F`).
+
+```r
+m <- llm(y ~ bloco + irrig + bloco:irrig + variedade + irrig:variedade, sp)
+
+anava(m, erros = c(bloco = "bloco:irrig", irrig = "bloco:irrig"))
+# irrig testado contra bloco:irrig (erro de parcela); variedade contra o Resíduo
+
+teste_t(lambda, m, erro = "bloco:irrig")        # contraste de parcela
+intervalo_confianca(lambda, m, erro = "bloco:irrig")
+```
+
+Reproduz os testes clássicos por estratos em delineamentos **balanceados**. Para
+split-plot **desbalanceado** o caminho rigoroso é modelo misto (`lme4`); aqui é
+uma aproximação didática (o pacote não delega ao `aov`, que falha com
+desbalanceamento e contrastes).
+
 ## Checagem de teoremas
 
 ```r

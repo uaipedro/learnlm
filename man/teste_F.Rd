@@ -4,7 +4,7 @@
 \alias{teste_F}
 \title{Teste F (Wald) para H0: L beta = m}
 \usage{
-teste_F(L, objeto, m = NULL)
+teste_F(L, objeto, m = NULL, erro = NULL)
 }
 \arguments{
 \item{L}{Matriz \verb{s x p} (cada linha uma funcao estimavel), ou um vetor de
@@ -13,6 +13,9 @@ expressoes de contraste (p.ex. \code{c("trat1 - trat2", "trat2 - trat3")}).}
 \item{objeto}{Objeto \code{llm}.}
 
 \item{m}{Vetor \code{s} sob H0 (padrao zeros).}
+
+\item{erro}{Nome de um termo do modelo a usar como estrato de erro (split-plot)
+no lugar do \code{Residuo} global. \code{NULL} (padrao) usa o QME global.}
 }
 \value{
 Vetor nomeado com \code{F}, \code{gl_num}, \code{gl_den}, \code{pvalor}.

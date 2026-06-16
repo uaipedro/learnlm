@@ -82,24 +82,39 @@ print.passo_llm <- function(x, ...) {
 
     rest <- list()
     for (r in c("soma_zero", "casela_referencia")) {
-      H <- .matriz_restricao(ml, r)
-      rest[[r]] <- .betas_restrito(ml$X, ml$y, H)
+      rest[[r]] <- tryCatch(
+        .betas_restrito(ml$X, ml$y, .matriz_restricao(ml, r)),
+        error = function(e) NULL
+      )
     }
-    comp_r <- do.call(rbind, rest)
-    colnames(comp_r) <- colnames(ml$X)
-    aj_r <- as.numeric(ml$X %*% rest[["soma_zero"]])
+    rest <- Filter(Negate(is.null), rest)
 
-    ps[[5]] <- .passo(
-      5, "Solucoes b sob restricoes",
-      paste(
-        "Impor uma restricao (soma zero ou casela de referencia) seleciona UMA",
-        "solucao. Cada restricao da um b diferente, mas — de novo — os valores",
-        "ajustados Xb sao os mesmos da solucao por g-inversa."
-      ),
-      objeto = round(comp_r, 4),
-      verificacao = sprintf("Xb (restricao) = Xb (g-inversa): %s",
-                            isTRUE(all.equal(aj_r, aj_c)))
-    )
+    if (length(rest) > 0) {
+      comp_r <- do.call(rbind, rest)
+      colnames(comp_r) <- colnames(ml$X)
+      aj_r <- as.numeric(ml$X %*% rest[[1]])
+      ps[[5]] <- .passo(
+        5, "Solucoes b sob restricoes",
+        paste(
+          "Impor uma restricao (soma zero ou casela de referencia) seleciona UMA",
+          "solucao. Cada restricao da um b diferente, mas — de novo — os valores",
+          "ajustados Xb sao os mesmos da solucao por g-inversa."
+        ),
+        objeto = round(comp_r, 4),
+        verificacao = sprintf("Xb (restricao) = Xb (g-inversa): %s",
+                              isTRUE(all.equal(aj_r, aj_c)))
+      )
+    } else {
+      # celulas vazias: as restricoes canonicas nao identificam a solucao
+      ps[[5]] <- .passo(
+        5, "Solucoes b sob restricoes (indisponivel)",
+        paste(
+          "As restricoes canonicas (soma zero / casela) NAO identificam a solucao",
+          "neste modelo — tipico de delineamentos com celulas vazias. Use a solucao",
+          "por g-inversa e trabalhe apenas com funcoes estimaveis (veja eh_estimavel)."
+        )
+      )
+    }
   }
 
   ps
