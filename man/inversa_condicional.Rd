@@ -19,7 +19,7 @@ Matriz \code{G} (g-inversa condicional de \code{A}).
 }
 \description{
 Constroi uma g-inversa (g1) tal que \code{A \%*\% G \%*\% A == A}, pelo metodo da
-submatriz nao-singular: escolhe \code{r = posto(A)} linhas e colunas independentes,
+submatriz nao-singular: escolhe r (= \code{posto(A)}) linhas e colunas independentes,
 inverte o bloco e posiciona o resultado. Nao e unica.
 }
 \examples{

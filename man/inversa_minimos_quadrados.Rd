@@ -18,3 +18,7 @@ Matriz \code{G} (g-inversa de minimos quadrados de \code{A}).
 G-inversa \code{G} tal que \code{A \%*\% G \%*\% A == A} e \code{A \%*\% G} e simetrica. Construida
 como \verb{(A'A)^- A'}, usando a g-inversa condicional de \verb{A'A}.
 }
+\examples{
+A <- matrix(c(1, 1, 1, 0, 1, 0, 1, 0, 1), 3)
+inversa_minimos_quadrados(A, explicar = TRUE)
+}

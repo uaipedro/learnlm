@@ -19,3 +19,10 @@ Vetor nomeado com \code{estimativa}, \code{ep}, \code{t}, \code{gl}, \code{pvalo
 \description{
 Teste t para H0: lambda'beta = valor
 }
+\examples{
+dados <- data.frame(
+  trat = factor(rep(c("A", "B", "C"), each = 4)),
+  y = c(7, 9, 8, 10, 41, 36, 39, 42, 18, 18, 18, 17)
+)
+teste_t("trat1 - trat3", llm(y ~ trat, dados))
+}

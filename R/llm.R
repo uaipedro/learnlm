@@ -25,14 +25,18 @@ llm <- function(formula, dados, intercepto = TRUE) {
   Xty <- if (!is.null(y)) as.numeric(t(X) %*% y) else NULL
   r <- posto(X)
   p <- ncol(X)
+  G <- inversa_condicional(XtX)
 
   obj <- list(
     formula = formula,
     dados = dados,
+    intercepto = intercepto,
     X = X,
     y = y,
     XtX = XtX,
     Xty = Xty,
+    G = G,
+    P = X %*% G %*% t(X),
     posto = r,
     p = p,
     n = nrow(X),
@@ -71,3 +75,11 @@ print.llm <- function(x, ...) {
   if (inherits(objeto, "llm")) return(objeto$X)
   as.matrix(objeto)
 }
+
+.g_inversa <- function(objeto) {
+  if (inherits(objeto, "llm")) return(objeto$G)
+  X <- as.matrix(objeto)
+  inversa_condicional(t(X) %*% X)
+}
+
+.solucao <- function(ml) as.numeric(ml$G %*% ml$Xty)

@@ -7,7 +7,8 @@
 teste_F(L, objeto, m = NULL)
 }
 \arguments{
-\item{L}{Matriz \verb{s x p} (cada linha uma funcao estimavel).}
+\item{L}{Matriz \verb{s x p} (cada linha uma funcao estimavel), ou um vetor de
+expressoes de contraste (p.ex. \code{c("trat1 - trat2", "trat2 - trat3")}).}
 
 \item{objeto}{Objeto \code{llm}.}
 
@@ -19,4 +20,12 @@ Vetor nomeado com \code{F}, \code{gl_num}, \code{gl_den}, \code{pvalor}.
 \description{
 Testa simultaneamente \code{s} funcoes estimaveis (linhas de \code{L}). A estatistica e
 \verb{F = (Lb - m)' [L (X'X)^- L']^\{-1\} (Lb - m) / (s * s^2) ~ F(s, n-r)}.
+}
+\examples{
+dados <- data.frame(
+  trat = factor(rep(c("A", "B", "C"), each = 4)),
+  y = c(7, 9, 8, 10, 41, 36, 39, 42, 18, 18, 18, 17)
+)
+m <- llm(y ~ trat, dados)
+teste_F(c("trat1 - trat2", "trat2 - trat3"), m)   # H0: sem efeito de trat
 }

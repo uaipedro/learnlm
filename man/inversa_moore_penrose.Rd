@@ -18,3 +18,7 @@ Matriz \code{G} (inversa de Moore-Penrose de \code{A}).
 G-inversa unica que satisfaz as quatro condicoes de Penrose, obtida via
 decomposicao em valores singulares (\code{MASS::ginv}).
 }
+\examples{
+A <- matrix(c(1, 1, 1, 0, 1, 0, 1, 0, 1), 3)
+inversa_moore_penrose(A, explicar = TRUE)
+}

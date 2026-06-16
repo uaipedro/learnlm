@@ -20,3 +20,13 @@ Lista com \code{qui_quadrado} (logico) e \code{gl} = \code{posto(A)}.
 \verb{y'Ay / sigma^2} segue qui-quadrado se e somente se \verb{A Sigma} for idempotente.
 Os graus de liberdade sao \code{posto(A)}.
 }
+\details{
+Pressupoe \verb{y ~ N(mu, sigma^2 Sigma)}. A funcao checa apenas a condicao
+distribucional (\verb{A Sigma} idempotente); a qui-quadrado e nao-central salvo se
+\verb{A mu = 0}.
+}
+\examples{
+P <- projetor(llm(y ~ trat, data.frame(
+  trat = factor(rep(c("A", "B"), each = 3)), y = c(1, 2, 3, 4, 5, 6))))
+forma_quadratica_qui2(P)   # projetor: idempotente => qui-quadrado
+}

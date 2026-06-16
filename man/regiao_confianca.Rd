@@ -7,7 +7,8 @@
 regiao_confianca(L, objeto, nivel = 0.95)
 }
 \arguments{
-\item{L}{Matriz \verb{s x p} (cada linha uma funcao estimavel).}
+\item{L}{Matriz \verb{s x p} (cada linha uma funcao estimavel), ou um vetor de
+expressoes de contraste.}
 
 \item{objeto}{Objeto \code{llm}.}
 

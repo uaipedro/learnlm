@@ -1,5 +1,7 @@
 .parse_combinacao <- function(expr) {
   expr <- gsub("\\s+", "", expr)
+  # limitacao conhecida: coeficientes em notacao cientifica (2e-3) quebram aqui,
+  # pois o '-' do expoente vira separador de termo. Use 0.002 no lugar.
   expr <- gsub("-", "+-", expr)
   partes <- strsplit(expr, "+", fixed = TRUE)[[1]]
   partes[partes != ""]

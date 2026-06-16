@@ -13,7 +13,7 @@ posto <- function(A, tol = 1e-7) {
 #' Inversa generalizada condicional
 #'
 #' Constroi uma g-inversa (g1) tal que `A %*% G %*% A == A`, pelo metodo da
-#' submatriz nao-singular: escolhe `r = posto(A)` linhas e colunas independentes,
+#' submatriz nao-singular: escolhe r (= `posto(A)`) linhas e colunas independentes,
 #' inverte o bloco e posiciona o resultado. Nao e unica.
 #'
 #' @param A Matriz numerica.
@@ -57,6 +57,9 @@ inversa_condicional <- function(A, explicar = FALSE, tol = 1e-7) {
 #' @param explicar Se `TRUE`, imprime a verificacao e devolve `G` invisivelmente.
 #' @return Matriz `G` (g-inversa de minimos quadrados de `A`).
 #' @export
+#' @examples
+#' A <- matrix(c(1, 1, 1, 0, 1, 0, 1, 0, 1), 3)
+#' inversa_minimos_quadrados(A, explicar = TRUE)
 inversa_minimos_quadrados <- function(A, explicar = FALSE) {
   A <- as.matrix(A)
   AtA <- t(A) %*% A
@@ -84,6 +87,9 @@ inversa_minimos_quadrados <- function(A, explicar = FALSE) {
 #' @param explicar Se `TRUE`, imprime as verificacoes e devolve `G` invisivelmente.
 #' @return Matriz `G` (inversa de Moore-Penrose de `A`).
 #' @export
+#' @examples
+#' A <- matrix(c(1, 1, 1, 0, 1, 0, 1, 0, 1), 3)
+#' inversa_moore_penrose(A, explicar = TRUE)
 inversa_moore_penrose <- function(A, explicar = FALSE) {
   A <- as.matrix(A)
   G <- MASS::ginv(A)

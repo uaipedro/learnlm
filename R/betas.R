@@ -9,7 +9,7 @@
 #' @param objeto Objeto `llm`.
 #' @param restricao Um de `"nenhuma"`, `"soma_zero"`, `"casela_referencia"`.
 #' @param inversa Quando `restricao = "nenhuma"`, qual g-inversa de `X'X` usar:
-#'   `"condicional"` ou `"moore_penrose"`.
+#'   `"condicional"`, `"moore_penrose"` ou `"minimos_quadrados"`.
 #' @return Vetor `b` nomeado pelas colunas de X. O atributo `ajustados` traz `Xb`.
 #' @export
 #' @examples
@@ -23,7 +23,7 @@
 #' betas(m, restricao = "casela_referencia")
 betas <- function(objeto,
                   restricao = c("nenhuma", "soma_zero", "casela_referencia"),
-                  inversa = c("condicional", "moore_penrose")) {
+                  inversa = c("condicional", "moore_penrose", "minimos_quadrados")) {
   ml <- .como_llm(objeto)
   if (is.null(ml$y)) stop("O modelo nao tem resposta y.", call. = FALSE)
   restricao <- match.arg(restricao)
@@ -31,8 +31,9 @@ betas <- function(objeto,
   if (restricao == "nenhuma") {
     inversa <- match.arg(inversa)
     G <- switch(inversa,
-      condicional = inversa_condicional(ml$XtX),
-      moore_penrose = inversa_moore_penrose(ml$XtX)
+      condicional = ml$G,
+      moore_penrose = inversa_moore_penrose(ml$XtX),
+      minimos_quadrados = inversa_minimos_quadrados(ml$XtX)
     )
     beta <- as.numeric(G %*% ml$Xty)
   } else {
@@ -51,6 +52,11 @@ betas <- function(objeto,
   Xty <- as.numeric(t(X) %*% y)
   p <- ncol(X)
   q <- nrow(H)
+  if (posto(rbind(X, H)) < p) {
+    stop(paste("As restricoes nao identificam a solucao: posto([X; H]) < numero de",
+               "parametros. Faltam restricoes (ou elas sao dependentes das colunas de X)."),
+         call. = FALSE)
+  }
   K <- rbind(cbind(XtX, t(H)), cbind(H, matrix(0, q, q)))
   rhs <- c(Xty, numeric(q))
   sol <- solve(K, rhs)
@@ -130,8 +136,12 @@ betas <- function(objeto,
 #' @return Matriz `P` (ou `M`).
 #' @export
 projetor <- function(objeto, residuos = FALSE, explicar = FALSE) {
-  X <- .pegar_X(objeto)
-  P <- X %*% inversa_condicional(t(X) %*% X) %*% t(X)
+  if (inherits(objeto, "llm")) {
+    P <- objeto$P
+  } else {
+    X <- .pegar_X(objeto)
+    P <- X %*% inversa_condicional(t(X) %*% X) %*% t(X)
+  }
   saida <- if (residuos) diag(nrow(P)) - P else P
 
   if (explicar) {
@@ -166,8 +176,8 @@ projetor <- function(objeto, residuos = FALSE, explicar = FALSE) {
 #' eh_estimavel(c(0, 1, -1, 0), m)  # contraste tau_A - tau_B: estimavel
 eh_estimavel <- function(lambda, objeto, tol = 1e-8) {
   X <- .pegar_X(objeto)
-  XtX <- t(X) %*% X
-  H <- XtX %*% inversa_condicional(XtX)
+  XtX <- if (inherits(objeto, "llm")) objeto$XtX else t(X) %*% X
+  H <- XtX %*% .g_inversa(objeto)
   lambda <- if (is.character(lambda)) .como_lambda(lambda, objeto) else as.numeric(lambda)
   if (length(lambda) != ncol(X)) {
     stop(sprintf("lambda deve ter comprimento %d (colunas de X).", ncol(X)),

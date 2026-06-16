@@ -7,7 +7,7 @@
 betas(
   objeto,
   restricao = c("nenhuma", "soma_zero", "casela_referencia"),
-  inversa = c("condicional", "moore_penrose")
+  inversa = c("condicional", "moore_penrose", "minimos_quadrados")
 )
 }
 \arguments{
@@ -16,7 +16,7 @@ betas(
 \item{restricao}{Um de \code{"nenhuma"}, \code{"soma_zero"}, \code{"casela_referencia"}.}
 
 \item{inversa}{Quando \code{restricao = "nenhuma"}, qual g-inversa de \verb{X'X} usar:
-\code{"condicional"} ou \code{"moore_penrose"}.}
+\code{"condicional"}, \code{"moore_penrose"} ou \code{"minimos_quadrados"}.}
 }
 \value{
 Vetor \code{b} nomeado pelas colunas de X. O atributo \code{ajustados} traz \code{Xb}.

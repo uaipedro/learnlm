@@ -18,3 +18,10 @@ Objeto \code{normal_mv} unidimensional.
 Para \verb{lambda'beta} estimavel, \verb{lambda'b ~ N(lambda'beta, sigma^2 lambda'(X'X)^- lambda)}. Devolve a normal correspondente, com a media estimada e a variancia
 estimada (usando \code{s^2 = QME}).
 }
+\examples{
+dados <- data.frame(
+  trat = factor(rep(c("A", "B", "C"), each = 4)),
+  y = c(7, 9, 8, 10, 41, 36, 39, 42, 18, 18, 18, 17)
+)
+distribuicao_estimavel("trat1 - trat3", llm(y ~ trat, dados))
+}

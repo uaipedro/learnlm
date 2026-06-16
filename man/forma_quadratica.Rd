@@ -17,3 +17,6 @@ Escalar \verb{y'Ay}.
 \description{
 Forma quadratica y'Ay
 }
+\examples{
+forma_quadratica(c(1, 2, 3), diag(3))   # = 14
+}

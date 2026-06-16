@@ -87,6 +87,12 @@ marginal <- function(objeto, indices) {
 #' @param objeto Objeto `llm`.
 #' @return Objeto `normal_mv` unidimensional.
 #' @export
+#' @examples
+#' dados <- data.frame(
+#'   trat = factor(rep(c("A", "B", "C"), each = 4)),
+#'   y = c(7, 9, 8, 10, 41, 36, 39, 42, 18, 18, 18, 17)
+#' )
+#' distribuicao_estimavel("trat1 - trat3", llm(y ~ trat, dados))
 distribuicao_estimavel <- function(lambda, objeto) {
   ml <- .como_llm(objeto)
   lambda <- .como_lambda(lambda, ml)

@@ -60,6 +60,7 @@ m$X; m$XtX; m$Xty       # as peças, acessíveis direto
 ```r
 betas(m, restricao = "nenhuma", inversa = "condicional")
 betas(m, restricao = "nenhuma", inversa = "moore_penrose")
+betas(m, restricao = "nenhuma", inversa = "minimos_quadrados")
 betas(m, restricao = "soma_zero")
 betas(m, restricao = "casela_referencia")
 ```
@@ -98,6 +99,7 @@ qme(m)                                  # SQE, gl, s² = QME
 intervalo_confianca(c(0, 1, 0, -1), m)  # IC para função estimável
 teste_t(c(0, 1, 0, -1), m)              # H0: λ'β = 0
 teste_F(L, m)                           # várias funções (Wald)
+teste_F(c("trat1 - trat2", "trat2 - trat3"), m)  # L por strings de contraste
 
 reg <- regiao_confianca(L, m)           # elipsoide (centro, W, constante)
 reg$dentro(c(0, 0))                     # o ponto está na região?

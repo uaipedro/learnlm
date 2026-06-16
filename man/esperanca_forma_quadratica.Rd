@@ -19,3 +19,6 @@ Escalar \verb{E[y'Ay]}.
 \description{
 \verb{E[y'Ay] = tr(A Sigma) + mu' A mu}.
 }
+\examples{
+esperanca_forma_quadratica(diag(3), mu = c(1, 2, 3))   # tr(A) + mu'mu
+}

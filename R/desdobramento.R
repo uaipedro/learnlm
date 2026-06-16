@@ -18,10 +18,10 @@
 }
 
 .sq_hipotese <- function(ml, L) {
-  G <- inversa_condicional(ml$XtX)
-  b <- as.numeric(G %*% ml$Xty)
+  .validar_L(ml, L, "contrastes do desdobramento")
+  b <- .solucao(ml)
   Lb <- as.numeric(L %*% b)
-  W <- L %*% G %*% t(L)
+  W <- L %*% ml$G %*% t(L)
   list(SQ = as.numeric(t(Lb) %*% solve(W) %*% Lb), gl = nrow(L))
 }
 

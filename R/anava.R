@@ -1,10 +1,11 @@
-.reducao_modelo <- function(rotulos, resposta, dados) {
+.reducao_modelo <- function(rotulos, resposta, dados, intercepto = TRUE) {
   formula <- if (length(rotulos) == 0) {
     stats::reformulate("1", response = resposta)
   } else {
     stats::reformulate(rotulos, response = resposta)
   }
-  X <- matriz_modelo(formula, dados)
+  X <- matriz_modelo(formula, dados, intercepto)
+  if (ncol(X) == 0) return(list(R = 0, posto = 0))
   y <- .resposta(formula, dados)
   XtX <- t(X) %*% X
   Xty <- as.numeric(t(X) %*% y)
@@ -38,11 +39,11 @@ reducao <- function(objeto, termos = NULL, ajustado_por = NULL) {
   if (is.null(termos)) termos <- attr(stats::terms(ml$formula), "term.labels")
 
   if (is.null(ajustado_por)) {
-    r <- .reducao_modelo(termos, resp, ml$dados)
+    r <- .reducao_modelo(termos, resp, ml$dados, ml$intercepto)
     return(list(R = r$R, gl = r$posto))
   }
-  completo <- .reducao_modelo(union(ajustado_por, termos), resp, ml$dados)
-  base <- .reducao_modelo(ajustado_por, resp, ml$dados)
+  completo <- .reducao_modelo(union(ajustado_por, termos), resp, ml$dados, ml$intercepto)
+  base <- .reducao_modelo(ajustado_por, resp, ml$dados, ml$intercepto)
   list(R = completo$R - base$R, gl = completo$posto - base$posto)
 }
 
@@ -71,12 +72,12 @@ anava <- function(objeto) {
   rotulos <- attr(stats::terms(ml$formula), "term.labels")
   if (length(rotulos) == 0) stop("O modelo nao tem termos para a ANAVA.", call. = FALSE)
 
-  Rmu <- .reducao_modelo(character(0), resp, ml$dados)
+  Rmu <- .reducao_modelo(character(0), resp, ml$dados, ml$intercepto)
   acum <- Rmu
   SQ <- numeric(length(rotulos))
   GL <- numeric(length(rotulos))
   for (k in seq_along(rotulos)) {
-    atual <- .reducao_modelo(rotulos[seq_len(k)], resp, ml$dados)
+    atual <- .reducao_modelo(rotulos[seq_len(k)], resp, ml$dados, ml$intercepto)
     SQ[k] <- atual$R - acum$R
     GL[k] <- atual$posto - acum$posto
     acum <- atual

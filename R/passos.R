@@ -61,8 +61,7 @@ print.passo_llm <- function(x, ...) {
   )
 
   if (ml$deficiencia > 0 && !is.null(ml$y)) {
-    Gc <- inversa_condicional(ml$XtX)
-    bc <- as.numeric(Gc %*% ml$Xty)
+    bc <- .solucao(ml)
     bmp <- as.numeric(inversa_moore_penrose(ml$XtX) %*% ml$Xty)
     aj_c <- as.numeric(ml$X %*% bc)
     aj_mp <- as.numeric(ml$X %*% bmp)
