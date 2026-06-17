@@ -4,14 +4,19 @@
 \alias{anava}
 \title{Tabela da analise de variancia (ANAVA)}
 \usage{
-anava(objeto, erros = NULL)
+anava(objeto, tipo = c("I", "II", "III"), erros = NULL, explicar = FALSE)
 }
 \arguments{
 \item{objeto}{Objeto \code{llm}.}
 
+\item{tipo}{Tipo de soma de quadrados: \code{"I"} (padrao), \code{"II"} ou \code{"III"}.}
+
 \item{erros}{Vetor nomeado opcional \code{fonte = termo_de_erro} (p.ex.
 \code{c(irrig = "bloco:irrig")}). Fontes nao listadas usam o \code{Residuo} global.
 Termos usados como erro viram estrato de erro puro (sem \code{F}).}
+
+\item{explicar}{Se \code{TRUE}, imprime a tabela e a hipotese testada por fonte, e
+devolve a tabela invisivelmente.}
 }
 \value{
 \code{data.frame} de classe \code{anava_llm} com colunas \code{GL}, \code{SQ}, \code{QM}, \code{F},
@@ -19,16 +24,25 @@ Termos usados como erro viram estrato de erro puro (sem \code{F}).}
 coluna \code{erro} (contra qual QM cada fonte foi testada).
 }
 \description{
-Monta a ANAVA sequencial (cada termo ajustado pelos anteriores, na ordem da
-formula), com as somas de quadrados obtidas por reducoes \code{R(.)}. Equivale a
-decomposicao do tipo I e reproduz \code{anova(lm(...))}. Serve para DIC, DBC e
-fatoriais. Com \code{erros}, cada fonte e testada contra um estrato de erro
-designado (split-plot / parcelas subdivididas).
+Monta a tabela de ANAVA com as somas de quadrados de um dos tres tipos
+(notacao SAS), todas pela mesma maquina de SQ de hipotese do pacote:
+\describe{
+\item{\code{"I"}}{sequencial: \code{R(termo | anteriores)}; depende da ordem; reproduz
+\code{anova(lm(...))}.}
+\item{\code{"II"}}{marginalidade: \verb{R(termo | termos que NAO o contem)}; nao
+depende da ordem.}
+\item{\code{"III"}}{parcial: medias marginais equiponderadas (contra todos os
+outros termos, inclusive interacoes); exige termos so de fatores.}
+}
+Com \code{erros}, cada fonte e testada contra um estrato de erro designado
+(split-plot). \code{tipo} (numerador) e \code{erros} (denominador) sao independentes.
 }
 \details{
-Os estratos de erro reproduzem exatamente os testes classicos em
-delineamentos \emph{balanceados}. Para split-plot \emph{desbalanceado} o rigoroso e
-modelo misto (REML, \code{lme4}); aqui e uma aproximacao didatica.
+No Tipo I as SQ dos termos somam a SQ do modelo; nos Tipos II/III, em
+dados desbalanceados, nao somam (sao ajustes parciais). Em dados balanceados
+sem interacao os tres tipos coincidem. Os estratos de erro reproduzem os
+testes classicos em delineamentos \emph{balanceados}; para split-plot
+\emph{desbalanceado} o rigoroso e modelo misto (REML, \code{lme4}).
 }
 \examples{
 dados <- data.frame(
@@ -36,5 +50,7 @@ dados <- data.frame(
   trat  = factor(rep(c("A", "B", "C", "D"), each = 3)),
   y = c(42, 45, 41, 50, 53, 49, 47, 48, 46, 39, 41, 38)
 )
-anava(llm(y ~ bloco + trat, dados))
+m <- llm(y ~ bloco + trat, dados)
+anava(m)
+anava(m, tipo = "III", explicar = TRUE)
 }

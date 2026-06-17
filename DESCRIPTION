@@ -1,6 +1,6 @@
 Package: learnlm
 Title: Aprendizado Interativo de Modelos Lineares de Posto Incompleto
-Version: 0.1.2
+Version: 0.1.3
 Authors@R:
     person("Pedro", "Mambelli", , "pedromambelli@gmail.com", role = c("aut", "cre"))
 Description: Ferramentas didaticas para aprender modelos lineares, com foco em
@@ -16,6 +16,7 @@ Roxygen: list(markdown = TRUE)
 Imports:
     MASS
 Suggests:
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    car
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0

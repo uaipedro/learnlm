@@ -131,6 +131,23 @@ reducao(m, "trat", ajustado_por = "bloco")   # R(τ | μ, bloco)
 `anava()` usa reduções sequenciais `R(·)` e reproduz `anova(lm(...))`. Serve para
 DIC, DBC e fatoriais.
 
+### Tipos de soma de quadrados (I, II, III)
+
+Em dados **desbalanceados** as fontes não são ortogonais, e a SQ de cada termo
+depende de contra o que se ajusta. `tipo=` dá os três tipos (notação SAS), e
+`explicar=TRUE` mostra a hipótese testada por fonte:
+
+```r
+anava(m, tipo = "I")    # sequencial: R(termo | anteriores) — depende da ordem
+anava(m, tipo = "II")   # marginalidade: R(termo | quem NÃO o contém)
+anava(m, tipo = "III")  # parcial: médias marginais equiponderadas
+anava(m, tipo = "III", explicar = TRUE)
+```
+
+Bate com `car::Anova(type = 2/3)`. Em dados balanceados sem interação os três
+coincidem. O Tipo III exige termos só de fatores e, com célula vazia, avisa que
+a função não é estimável (fronteira do Tipo IV, fora de escopo).
+
 Quando há interação, `desdobramento()` estuda um fator dentro de cada nível do
 outro (vale `Σ_j SQ(fator | dentro = j) = SQ(fator) + SQ(fator:dentro)`):
 
