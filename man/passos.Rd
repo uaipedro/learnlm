@@ -7,10 +7,10 @@
 passos(objeto, qual = NULL)
 }
 \arguments{
-\item{objeto}{Objeto \code{llm}.}
+\item{objeto}{Objeto \code{llm} ou \code{permutacao_llm} (de \code{\link[=teste_permutacao]{teste_permutacao()}}).}
 
 \item{qual}{Opcional. Indice(s) numerico(s) dos passos, ou um texto para
-filtrar pelo titulo (p.ex. \code{"restric"}).}
+filtrar pelo titulo (p.ex. \code{"restric"}, \code{"nula"}).}
 }
 \value{
 Invisivelmente, a lista de passos.

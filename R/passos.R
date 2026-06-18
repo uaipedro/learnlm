@@ -125,9 +125,9 @@ print.passo_llm <- function(x, ...) {
 #' Imprime os passos registrados por [llm()]: matriz X, sistema de equacoes
 #' normais, posto/deficiencia, solucoes por g-inversas e por restricoes.
 #'
-#' @param objeto Objeto `llm`.
+#' @param objeto Objeto `llm` ou `permutacao_llm` (de [teste_permutacao()]).
 #' @param qual Opcional. Indice(s) numerico(s) dos passos, ou um texto para
-#'   filtrar pelo titulo (p.ex. `"restric"`).
+#'   filtrar pelo titulo (p.ex. `"restric"`, `"nula"`).
 #' @return Invisivelmente, a lista de passos.
 #' @export
 #' @examples
@@ -139,6 +139,7 @@ print.passo_llm <- function(x, ...) {
 #' passos(m)
 #' passos(m, qual = 1)
 passos <- function(objeto, qual = NULL) {
+  if (inherits(objeto, "permutacao_llm")) return(.passos_permutacao(objeto, qual))
   ml <- .como_llm(objeto)
   ps <- ml$passos
   alvo <- ps

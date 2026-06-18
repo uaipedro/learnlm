@@ -123,6 +123,29 @@ llm(y ~ trat, dados, fix_boxcox = "tipo")     # aplica a transformação sugerid
 llm(y ~ trat, dados, fix_boxcox = "lambda")   # aplica Box-Cox com o λ̂ estimado
 ```
 
+## Teste de permutação (Freedman–Lane)
+
+Quando a normalidade dos resíduos não pode ser assumida, use o teste de
+permutação — a mesma interface de `L` do `teste_F`/`teste_t`:
+
+```r
+# DIC: permutação livre (H0: τ_A = τ_C)
+res <- teste_permutacao("trat1 - trat3", m, seed = 42)
+# conjunto de contrastes (F de permutação)
+res <- teste_permutacao(c("trat1 - trat2", "trat2 - trat3"), m, seed = 42)
+# split-plot: permuta dentro de bloco:irrig
+res <- teste_permutacao("variedade1 - variedade2", m,
+                        erro = "bloco:irrig", n_perm = 2000, seed = 42)
+
+print(res)         # estatística, p-valor, esquema
+plot(res)          # histograma da distribuição nula
+passos(res)        # narração Freedman–Lane passo a passo
+```
+
+O esquema de Freedman–Lane permuta os resíduos do **modelo reduzido** sob
+H0 (preservando os valores ajustados), respeitando a estrutura de erro via
+`erro =`. Quando `n! ≤ 50000` e sem estratos, faz enumeração exata.
+
 ## Inferência (Fase 2)
 
 ```r

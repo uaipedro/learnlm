@@ -21,6 +21,27 @@ print.regiao_llm <- function(x, ...) {
   invisible(x)
 }
 
+#' Distribuicao nula do teste de permutacao
+#'
+#' Histograma da distribuicao nula com a estatistica observada marcada. Para o
+#' teste t (bilateral), tambem traca a linha simetrica `-stat_obs` (pontilhada).
+#'
+#' @param x Objeto `permutacao_llm` (de [teste_permutacao()]).
+#' @param ... Passado a `hist`.
+#' @return Invisivelmente, o objeto.
+#' @export
+plot.permutacao_llm <- function(x, ...) {
+  rotulo <- if (x$q == 1L) "t permutado" else "F permutado"
+  graphics::hist(x$nula,
+                 main = "Distribuicao nula (permutacao)",
+                 xlab = rotulo, col = "grey90", border = "grey60", ...)
+  graphics::abline(v = x$stat_obs, col = "tomato", lwd = 2, lty = 1)
+  if (x$q == 1L) {
+    graphics::abline(v = -x$stat_obs, col = "tomato", lwd = 2, lty = 3)
+  }
+  invisible(x)
+}
+
 #' Grafico da regiao de confianca (2 funcoes)
 #'
 #' Desenha a elipse de confianca quando ha exatamente duas funcoes estimaveis.

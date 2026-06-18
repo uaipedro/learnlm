@@ -1,6 +1,6 @@
 Package: learnlm
 Title: Aprendizado Interativo de Modelos Lineares de Posto Incompleto
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
     person("Pedro", "Mambelli", , "pedromambelli@gmail.com", role = c("aut", "cre")),
     person("Joao Paulo", "Bonifacio", , "joao.bonifacio2@estudante.ufla.br", role = "aut"))
