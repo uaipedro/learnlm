@@ -16,6 +16,7 @@ testa estimabilidade e narra cada etapa passo a passo.
 Authors:
 \itemize{
   \item Pedro Mambelli \email{pedromambelli@gmail.com}
+  \item Joao Paulo Bonifacio \email{joao.bonifacio2@estudante.ufla.br}
 }
 
 }

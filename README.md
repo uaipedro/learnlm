@@ -92,6 +92,37 @@ intervalo_confianca("trat1 - trat3", m)
 teste_t("trat1 - trat3", m)
 ```
 
+## Diagnóstico de normalidade (Box-Cox)
+
+`llm()` roda um Box-Cox com a mesma fórmula e avisa quando `λ = 1` cai fora do
+IC95% do perfil de verossimilhança, sugerindo a transformação normalizadora.
+
+```r
+m <- llm(y ~ trat, dados)
+# warning: 1 não está no IC95% (λ̂ = 0.26, IC = [0.06, 0.47]). Sugestão: 'raiz'.
+m$boxcox                       # lambda_hat, ic, contem_1, tipo_sug, lambda_sug
+
+llm(y ~ trat, dados, checar_boxcox = FALSE)   # desliga o diagnóstico
+```
+
+`transformar_resposta()` aplica a transformação e reajusta o modelo:
+
+```r
+transformar_resposta(m)                    # usa a sugestão do diagnóstico
+transformar_resposta(m, tipo = "log")      # literal: log(y), raiz, inversa, ...
+transformar_resposta(m, lambda = 0.5)      # forma Box-Cox (y^λ - 1)/λ
+```
+
+`tipo` ∈ `identidade`, `log`, `raiz`, `inversa_raiz`, `inversa`, `quadrado`.
+
+Para já sair com o modelo corrigido quando o pressuposto for violado, use
+`fix_boxcox` no próprio `llm()`:
+
+```r
+llm(y ~ trat, dados, fix_boxcox = "tipo")     # aplica a transformação sugerida
+llm(y ~ trat, dados, fix_boxcox = "lambda")   # aplica Box-Cox com o λ̂ estimado
+```
+
 ## Inferência (Fase 2)
 
 ```r

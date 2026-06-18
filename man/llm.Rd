@@ -4,7 +4,7 @@
 \alias{llm}
 \title{Ajusta e dichava um modelo linear passo a passo}
 \usage{
-llm(formula, dados, intercepto = TRUE)
+llm(formula, dados, intercepto = TRUE, checar_boxcox = TRUE, fix_boxcox = NULL)
 }
 \arguments{
 \item{formula}{Formula do modelo, p.ex. \code{y ~ bloco + trat}.}
@@ -12,6 +12,15 @@ llm(formula, dados, intercepto = TRUE)
 \item{dados}{\code{data.frame} com as variaveis.}
 
 \item{intercepto}{Se \code{TRUE} (padrao), inclui o intercepto \code{mu}.}
+
+\item{checar_boxcox}{Se \code{TRUE} (padrao), roda o diagnostico de Box-Cox sobre a
+resposta e avisa quando \code{lambda = 1} fica fora do IC95\% (veja \code{m$boxcox} e
+\code{\link[=transformar_resposta]{transformar_resposta()}}).}
+
+\item{fix_boxcox}{Se \code{NULL} (padrao), apenas avisa. Se \code{"tipo"} ou \code{"lambda"}
+e o pressuposto for violado, ja devolve o modelo corrigido — \code{"tipo"} aplica
+a transformacao padrao sugerida e \code{"lambda"} aplica a forma de Box-Cox com o
+\code{lambda_hat} estimado (via \code{\link[=transformar_resposta]{transformar_resposta()}}).}
 }
 \value{
 Objeto de classe \code{llm}.
