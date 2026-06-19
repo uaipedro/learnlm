@@ -165,3 +165,68 @@ test_that("passos() aceita permutacao_llm", {
   res <- teste_permutacao("trat1 - trat3", m_dic, n_perm = 100, seed = 1)
   expect_output(passos(res), "Freedman|hipotese|permut")
 })
+
+# ---- comparacao com coin -------------------------------------------------- #
+# coin::oneway_test usa permutacao de rotulos (sem Freedman-Lane); para modelos
+# sem covariaveis, os dois esquemas sao equivalentes quando o teste e feito no
+# subconjunto dos dois grupos comparados.
+
+test_that("exato: p-valor concorda com coin::oneway_test(distribution=exact())", {
+  skip_if_not_installed("coin")
+
+  # Dois grupos equilibrados, n=6 (6! = 720 <= 50000 -> learnlm usa enumeracao exata)
+  dados_2g <- data.frame(
+    trat = factor(c("A","A","A","C","C","C")),
+    y    = c(2.0, 2.5, 3.0, 5.0, 6.0, 5.5)
+  )
+  m_2g <- suppressWarnings(llm(y ~ trat, dados_2g))
+
+  res_perm <- suppressWarnings(teste_permutacao("trat1 - trat2", m_2g))
+  p_coin   <- as.numeric(coin::pvalue(
+    coin::oneway_test(y ~ trat, data = dados_2g, distribution = coin::exact())
+  ))
+
+  # Ambos devem ser exatos (enumeracao completa)
+  expect_true(res_perm$exato)
+  # p-valores devem coincidir: C(6,3)=20 atribuicoes distintas; as 720 permutacoes
+  # learnlm sao agrupamentos de 3!*3!=36 equivalentes de cada uma das 20.
+  expect_equal(res_perm$pvalor, p_coin, tolerance = 1e-10)
+})
+
+test_that("MC par-a-par: learnlm e coin rejeitam H0 no mesmo dado significativo", {
+  skip_if_not_installed("coin")
+
+  # Dados claramente significativos: dois grupos bem separados, n=8 por grupo
+  dados_sig <- data.frame(
+    trat = factor(rep(c("A","C"), each = 8)),
+    y    = c(7, 9, 8, 10, 8, 9, 7, 10,  18, 18, 18, 17, 19, 20, 17, 19)
+  )
+  m_sig <- suppressWarnings(llm(y ~ trat, dados_sig))
+
+  res_perm <- teste_permutacao("trat1 - trat2", m_sig, n_perm = 4999, seed = 42)
+  set.seed(42)
+  p_coin <- as.numeric(coin::pvalue(
+    coin::oneway_test(y ~ trat, data = dados_sig,
+                      distribution = coin::approximate(nresample = 4999))
+  ))
+
+  expect_lt(res_perm$pvalor, 0.001)
+  expect_lt(p_coin, 0.001)
+})
+
+test_that("MC F global: learnlm e coin rejeitam H0 no mesmo dado significativo", {
+  skip_if_not_installed("coin")
+
+  # H0: tau_A = tau_B = tau_C -- claramente falsa nos dados_dic
+  set.seed(42)
+  p_coin_f <- as.numeric(coin::pvalue(
+    coin::oneway_test(y ~ trat, data = dados_dic,
+                      teststat = "quadratic",
+                      distribution = coin::approximate(nresample = 4999))
+  ))
+  res_f <- teste_permutacao(c("trat1 - trat2", "trat2 - trat3"), m_dic,
+                             n_perm = 4999, seed = 42)
+
+  expect_lt(p_coin_f, 0.001)
+  expect_lt(res_f$pvalor, 0.001)
+})

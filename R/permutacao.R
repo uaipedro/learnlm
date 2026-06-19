@@ -273,7 +273,12 @@ teste_permutacao <- function(L, objeto, m = NULL, erro = NULL,
       .stat_perm(yhat_null + e_null[idx], LGXt, m, W_sc, Winv, q, M_denom, gl_denom)
     })
     n_perm_ef <- nrow(perms)
-    pvalor <- if (q == 1L) mean(abs(nula) >= abs(stat_obs)) else mean(nula >= stat_obs)
+    # Tolerancia de ponto flutuante: stat_obs e calculado de ml$y, os valores
+    # de nula sao calculados de yhat_null + e_null[idx] = P_red*y + (I-P_red)*y ≈ y
+    # com erro de arredondamento ~eps. Sem tolerancia, permutacoes equivalentes
+    # nao sao contadas (diagnostico: coin::oneway_test(exact()) vs learnlm divergem).
+    tol_fp <- sqrt(.Machine$double.eps)
+    pvalor <- if (q == 1L) mean(abs(nula) + tol_fp >= abs(stat_obs)) else mean(nula + tol_fp >= stat_obs)
   } else {
     # Preserva estado do RNG
     old_seed <- if (exists(".Random.seed", envir = globalenv())) {
